@@ -1,0 +1,61 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions", "tracing"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String  @id @default(uuid()) @db.Uuid
+  email String  @unique
+  Order Order[]
+
+  @@map("user")
+}
+
+//TODO: remove @@maps
+
+model Order {
+  id         String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId     String      @db.Uuid
+  orderItems OrderItem[]
+  status     OrderStatus
+  buyer      User        @relation(fields: [userId], references: [id])
+}
+
+model OrderItem {
+  id        String  @id @default(uuid()) @db.Uuid
+  amount    Int
+  orderId   String  @db.Uuid
+  productId String  @db.Uuid
+  Order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Product {
+  id             String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name           String      @unique
+  price          Decimal
+  amountAvalible Int         @map("amount_avalible")
+  OrderItem      OrderItem[]
+  category       Category?   @relation(fields: [categoryId], references: [id])
+  categoryId     String?     @db.Uuid
+
+  @@index(map: "my_cool_index", [price, name])
+  @@map("product")
+}
+
+model Category {
+  id      String    @id @default(uuid()) @db.Uuid
+  name    String    @unique
+  product Product[]
+}
+
+enum OrderStatus {
+  InProgress
+  Canceled
+  Completed
+}

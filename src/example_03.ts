@@ -7,6 +7,7 @@ async function main() {
     _avg: { amountAvalible: true, price: true },
     by: ["categoryId"],
   });
+  await prisma.order.count();
   await prisma.category.create({
     data: {
       name: "nova categoria",
@@ -23,6 +24,14 @@ async function main() {
   await prisma.orderItem.findMany({
     where: { product: { category: { name: { contains: "nova" } } } },
     include: { Order: true },
+  });
+  await prisma.orderItem.findMany({
+    where: { product: { category: { name: { contains: "nova" } } } },
+    include: { Order: true },
+    skip: 2,
+    take: 10,
+    // cursor: { id: "some_uuid" },
+    orderBy: [{ createdAt: "desc" }, { product: { price: "asc" } }],
   });
 }
 

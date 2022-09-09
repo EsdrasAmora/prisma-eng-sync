@@ -16,8 +16,6 @@ model User {
   @@map("user")
 }
 
-//TODO: remove @@maps
-
 model Order {
   id         String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   userId     String      @db.Uuid
@@ -27,12 +25,14 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(uuid()) @db.Uuid
+  id        String   @id @default(uuid()) @db.Uuid
   amount    Int
-  orderId   String  @db.Uuid
-  productId String  @db.Uuid
-  Order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  orderId   String   @db.Uuid
+  productId String   @db.Uuid
+  Order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
 }
 
 model Product {

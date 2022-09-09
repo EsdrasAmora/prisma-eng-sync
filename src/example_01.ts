@@ -13,7 +13,7 @@ async function main() {
       { email: "felipe.waku@taqtile.com" },
     ],
   });
-  prisma.product.upsert({
+  await prisma.product.upsert({
     where: { name: "tenis daora" },
     create: { price: "300.00", amountAvalible: 2, name: "tenis daora" },
     update: { price: "300.00", amountAvalible: 2, name: "tenis daora" },
